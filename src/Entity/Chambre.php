@@ -7,9 +7,12 @@ use App\Repository\ChambreRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ChambreRepository::class)]
 #[ApiResource]
+#[UniqueEntity('nom')]
 class Chambre
 {
     #[ORM\Id]
@@ -18,12 +21,39 @@ class Chambre
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(
+        message: 'Le num de chambre est requis',
+    )]
+    #[Assert\Length(
+        min: 1,
+        max: 10,
+        minMessage: "Le num de chambre doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le num de chambre ne doit pas faire plus que {{ limit }} caractères"
+    )]
     private ?int $numChambre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 20,
+        max: 255,
+        minMessage: "Le type doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le type ne doit pas faire plus que {{ limit }} caractères"
+    )]
+    #[Assert\NotBlank(
+        message: 'Le type est requis',
+    )]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 20,
+        max: 255,
+        minMessage: "Le status doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le status ne doit pas faire plus que {{ limit }} caractères"
+    )]
+    #[Assert\NotBlank(
+        message: 'Le status est requis',
+    )]
     private ?string $status = null;
 
     #[ORM\OneToMany(targetEntity: Assignation::class, mappedBy: 'chambre')]

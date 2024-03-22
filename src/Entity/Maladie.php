@@ -7,9 +7,12 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MaladieRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaladieRepository::class)]
 #[ApiResource]
+#[UniqueEntity('nom')]
 #[ApiFilter(SearchFilter::class, properties: ['categorie' => 'exact', 'gravite' => 'exact'])]
 class Maladie
 {
@@ -19,12 +22,39 @@ class Maladie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'Le nom est requis',
+    )]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "Le nom doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le nom ne doit pas faire plus que {{ limit }} caractères"
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "La categorie doit faire au moins {{ limit }} caractères",
+        maxMessage: "La categorie ne doit pas faire plus que {{ limit }} caractères"
+    )]
+    #[Assert\NotBlank(
+        message: 'La categorie est requis',
+    )]
     private ?string $categorie = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "La gravite doit faire au moins {{ limit }} caractères",
+        maxMessage: "La gravite ne doit pas faire plus que {{ limit }} caractères"
+    )]
+    #[Assert\NotBlank(
+        message: 'La gravite est requis',
+    )]
     private ?string $gravite = null;
 
     public function getId(): ?int

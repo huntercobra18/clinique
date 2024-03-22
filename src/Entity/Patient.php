@@ -9,9 +9,12 @@ use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
 #[ApiResource]
+#[UniqueEntity('nom')]
 #[ApiFilter(SearchFilter::class, properties: ['age' => 'exact', 'diagnostic' => 'partial'])]
 class Patient
 {
@@ -21,18 +24,64 @@ class Patient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'Le nom est requis',
+    )]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "Le nom doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le nom ne doit pas faire plus que {{ limit }} caractères"
+    )]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(
+        message: 'L\'age est requis',
+    )]
+    #[Assert\Length(
+        min: 1,
+        max: 3,
+        minMessage: "L'age doit faire au moins {{ limit }} caractères",
+        maxMessage: "L'age ne doit pas faire plus que {{ limit }} caractères"
+    )]
     private ?int $age = null;
 
     #[ORM\Column(length: 40)]
+    #[Assert\Choice(
+        ['homme', 'femme',"autre"],
+        message: 'Genre est invalide'
+    )]
+    #[Assert\NotBlank(
+        message: 'Le genre est requis',
+    )]
     private ?string $genre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 20,
+        max: 255,
+        minMessage: "Le diagnostic doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le diagnostic ne doit pas faire plus que {{ limit }} caractères"
+    )]
+    #[Assert\NotBlank(
+        message: 'Le diagnostic est requis',
+    )]
     private ?string $diagnostic = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 10,
+        max: 255,
+        minMessage: "Le mail doit faire au moins {{ limit }} caractères",
+        maxMessage: "Le mail ne doit pas faire plus que {{ limit }} caractères"
+    )]
+    #[Assert\Email(
+        message: 'Le mail n\'est pas valide',
+    )]
+    #[Assert\NotBlank(
+        message: 'Le mail est requis',
+    )]
     private ?string $coordonnees = null;
 
     #[ORM\OneToMany(targetEntity: Assignation::class, mappedBy: 'patient')]
